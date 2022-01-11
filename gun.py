@@ -1,24 +1,34 @@
 import pygame
 from pygame.sprite import Sprite
 
+
 class Gun(Sprite):
 
     def __init__(self, screen):
         """инициализация пушки"""
-        super(Gun, self).__init__()
+        super().__init__()
         self.screen = screen
-        self.image = pygame.image.load('images/pixil-frame-0 (1).png')
+        self.image = pygame.image.load('pixil.png')
         self.rect = self.image.get_rect()
         self.screen_rect = screen.get_rect()
         self.rect.centerx = self.screen_rect.centerx
         self.center = float(self.rect.centerx)
-        self.rect.bottom = self.screen_rect.bottom
+        self.rect.bottom = self.screen_rect.bottom - 20
         self.mright = False
         self.mleft = False
 
     def output(self):
         """рисование пушки"""
         self.screen.blit(self.image, self.rect)
+
+    def zero_update_gun(self, screen):
+        self.rect = self.image.get_rect()
+        self.screen_rect = screen.get_rect()
+        self.rect.centerx = self.screen_rect.centerx
+        self.center = float(self.rect.centerx)
+        self.rect.bottom = self.screen_rect.bottom - 20
+        self.mright = False
+        self.mleft = False
 
     def update_gun(self):
         """обновление позиции пушки"""
