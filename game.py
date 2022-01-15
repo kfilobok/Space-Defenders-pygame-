@@ -192,8 +192,7 @@ if __name__ == '__main__':
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = pygame.mouse.get_pos()
-                    print(x)
-                    print(y)
+
                     if 278 <= x <= 385 and 464 <= y <= 518:
                         menu = False
                         level_game = True
@@ -218,6 +217,16 @@ if __name__ == '__main__':
             text_h = text.get_height()
             pygame.draw.rect(screen, 'RED', (text_x - 10, text_y - 10,
                                              text_w + 20, text_h + 20), 1)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    x, y = pygame.mouse.get_pos()
+                    if 104 <= x <= 365 and 164 <= y <= 217:
+                        rules = False
+                        menu = True
+                        k = 1
+
 
 
 
