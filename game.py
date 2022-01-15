@@ -159,7 +159,7 @@ if __name__ == '__main__':
 
         elif menu:
             screen.fill(bg_color)
-            pygame.draw.rect(screen, ('white'), (100, 150, 500, 450))
+            pygame.draw.rect(screen, ('black'), (100, 150, 500, 450))
             font = pygame.font.Font(None, 50)
             text = font.render("WELCOME", True, 'PURPLE')
             text_x = text.get_width() + 70
@@ -203,9 +203,9 @@ if __name__ == '__main__':
                         k = 1
         elif rules:
             screen.fill(bg_color)
-            pygame.draw.rect(screen, ('white'), (100, 150, 500, 450))
+            pygame.draw.rect(screen, ('black'), (100, 150, 500, 450))
             font = pygame.font.Font(None, 50)
-            text = font.render("Тут должны быть правила", True, 'black')
+            text = font.render("Тут должны быть правила", True, 'white')
             text_x = text.get_width() - 330
             text_y = text.get_height() + 300
             screen.blit(text, (text_x, text_y))
