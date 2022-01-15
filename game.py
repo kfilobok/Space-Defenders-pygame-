@@ -210,6 +210,15 @@ if __name__ == '__main__':
             text_x = text.get_width() - 330
             text_y = text.get_height() + 300
             screen.blit(text, (text_x, text_y))
+            text = font.render("CLOSE RULES", True, 'RED')
+            text_x = text.get_width() - 130
+            text_y = text.get_height() + 140
+            screen.blit(text, (text_x, text_y))
+            text_w = text.get_width()
+            text_h = text.get_height()
+            pygame.draw.rect(screen, 'RED', (text_x - 10, text_y - 10,
+                                             text_w + 20, text_h + 20), 1)
+
 
 
 
