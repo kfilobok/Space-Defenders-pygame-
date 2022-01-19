@@ -319,35 +319,27 @@ if __name__ == '__main__':
                             pygame.image.load('кадр 9.png'), pygame.image.load('кадр 10.png'),
                             pygame.image.load('кадр 11.png'), pygame.image.load('кадр 12.png')
                             ]
-
             width = 254
             height = 254
             count = 0
             running = True
             kol = 0
-
             while running:
                 kol += 10
-
                 screen.blit(illustration[count], (kol, 300))
                 pygame.display.update()
-
                 if count == 11:
-
                     count = 0
                 else:
                     count += 1
-
                 clock.tick(20)
                 screen.fill(bg_color)
                 pygame.display.update()
                 if kol > 700:
-                    print(44)
                     running = False
 
             animation = False
             level_game = True
-
 
         elif level_game:
             screen.fill(bg_color)
