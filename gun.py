@@ -33,9 +33,9 @@ class Gun(Sprite):
     def update_gun(self):
         """обновление позиции пушки"""
         if self.mright and self.rect.right < self.screen_rect.right:
-            self.center += 1.5
+            self.center += 1
         if self.mleft and self.rect.left > 0:
-            self.center -= 1.5
+            self.center -= 1
 
         self.rect.centerx = self.center
 

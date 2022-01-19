@@ -6,7 +6,7 @@ import time
 import pygame
 from gun import Gun
 from pygame.sprite import Group
-from stats import Stats
+
 # from scores import Scores
 from ino import Ino
 from bullet import Bullet
@@ -44,6 +44,7 @@ def events(screen, gun, bullets):
             elif event.key == pygame.K_SPACE:
                 new_bullet = Bullet(screen, gun)
                 bullets.add(new_bullet)
+
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_RIGHT:
                 gun.mright = False
@@ -51,7 +52,7 @@ def events(screen, gun, bullets):
                 gun.mleft = False
 
 
-def update(bg_color, screen, stats, gun, inos, bullets):
+def update(bg_color, screen, gun, inos, bullets):
     """обновление экрана"""
     # sc.show_score()
     for bullet in bullets.sprites():
@@ -60,8 +61,10 @@ def update(bg_color, screen, stats, gun, inos, bullets):
     inos.draw(screen)
 
 
-def update_bullets(screen, stats, inos, bullets):
+def update_bullets(screen, inos, bullets, f):
     """обновление позиции пуль"""
+    global level_game
+    global win
     bullets.update()
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
@@ -75,10 +78,11 @@ def update_bullets(screen, stats, inos, bullets):
     # sc.image_guns()
     if len(inos) == 0:
         bullets.empty()
-        create_army(screen, inos, level, image)
+        win = True
+        level_game = False
 
 
-def gun_kill(stats, screen, gun, inos, bullets):
+def gun_kill(screen, gun, inos, bullets):
     global finish_window
     global level_game
     inos.empty()
@@ -99,20 +103,20 @@ def gun_kill(stats, screen, gun, inos, bullets):
     #     sys.exit()
 
 
-def update_inos(stats, screen, gun, inos, bullets):
+def update_inos(screen, gun, inos, bullets):
     """обновляет позицию пришельцев"""
     inos.update()
     if pygame.sprite.spritecollideany(gun, inos):
-        gun_kill(stats, screen, gun, inos, bullets)
-    inos_check(stats, screen, gun, inos, bullets)
+        gun_kill(screen, gun, inos, bullets)
+    inos_check(screen, gun, inos, bullets)
 
 
-def inos_check(stats, screen, gun, inos, bullets):
+def inos_check(screen, gun, inos, bullets):
     """проверка, добралась ли армия до края экрана"""
     screen_rect = screen.get_rect()
     for ino in inos.sprites():
         if ino.rect.bottom >= screen_rect.bottom:
-            gun_kill(stats, screen, gun, inos, bullets)
+            gun_kill(screen, gun, inos, bullets)
             break
 
 
@@ -151,7 +155,7 @@ def create_army(screen, inos, level, image):
 
 
 #
-# def check_high_score(stats, sc):
+# def check_high_score( sc):
 #     """проверка новых рекордов"""
 #     if stats.score > stats.high_score:
 #         stats.high_score = stats.score
@@ -173,9 +177,15 @@ if __name__ == '__main__':
     gun = Gun(screen)
     bullets = Group()
     inos = Group()
+    name = 'owner'
     # данные считываются из бд и впоследствии используются в функциях: create_army, table_results
-    name = 0
-    level = 5
+    con = sqlite3.connect("rating.db")
+    cur = con.cursor()
+    level = cur.execute(f"""SELECT level FROM main
+                    WHERE name == '{name}'""").fetchall()[0][0]
+
+    #  con.close()
+
     if level < 5:
         image = 'ino(2).png'
     elif level < 10:
@@ -184,10 +194,10 @@ if __name__ == '__main__':
         image = 'pr.png'
 
     create_army(screen, inos, level, image)
-    stats = Stats()
+
     # sc = Scores(screen, stats)
     start_window = True
-    menu = level_game = finish_window = results = rules = animation = False
+    menu = level_game = finish_window = results = rules = animation = win = False
     k = 0
     while True:
         if start_window:
@@ -202,36 +212,54 @@ if __name__ == '__main__':
                     if 300 <= x <= 400 and 350 <= y <= 450:
                         start_window = False
                         menu = True
+                        f = 1
 
 
         elif menu:
+            if f == 1:
+                # данные считываются из бд и впоследствии используются в функциях: create_army, table_results
+                con = sqlite3.connect("rating.db")
+                cur = con.cursor()
+                level = cur.execute(f"""SELECT level FROM main
+                                    WHERE name == '{name}'""").fetchall()[0][0]
+
+                #  con.close()
+
+                if level < 5:
+                    image = 'ino(2).png'
+                elif level < 10:
+                    image = 'ino.png'
+                else:
+                    image = 'pr.png'
+
+                create_army(screen, inos, level, image)
+                f = 0
             screen.fill(bg_color)
-            # pygame.draw.rect(screen, ('black'), (100, 150, 500, 450))
             font = pygame.font.Font(None, 50)
             text = font.render("WELCOME", True, 'PURPLE')
             text_x = text.get_width() + 70
             text_y = text.get_height() + 300
             screen.blit(text, (text_x, text_y))
             text = font.render("LEVEL " + str(level), True, 'BLUE')
-            text_x = text.get_width() + 128
-            text_y = text.get_height() + 370
+            text_x = (700 - text.get_width()) // 2
+            text_y = (800 - text.get_height()) // 2
             screen.blit(text, (text_x, text_y))
-            text = font.render("RULES", True, 'RED')
-            text_x = text.get_width()
-            text_y = text.get_height() + 140
-            screen.blit(text, (text_x, text_y))
-            text_w = text.get_width()
-            text_h = text.get_height()
-            pygame.draw.rect(screen, 'RED', (text_x - 10, text_y - 10,
-                                             text_w + 20, text_h + 20), 1)
             text = font.render("PLAY", True, 'GREEN')
-            text_x = text.get_width() + 200
-            text_y = text.get_height() + 440
+            text_x = (700 - text.get_width()) // 2
+            text_y = (800 - text.get_height()) // 2 + 80
             screen.blit(text, (text_x, text_y))
             text_w = text.get_width()
             text_h = text.get_height()
             pygame.draw.rect(screen, (0, 255, 0), (text_x - 10, text_y - 10,
                                                    text_w + 20, text_h + 20), 1)
+
+            text = font.render("RULES", True, 'RED')
+            text_x = 30
+            text_y = 40
+            screen.blit(text, (text_x, text_y))
+            text_w = text.get_width()
+            text_h = text.get_height()
+            # pygame.draw.rect(screen, 'RED', (text_x - 10, text_y - 10,  text_w + 20, text_h + 20), 1)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
@@ -241,10 +269,12 @@ if __name__ == '__main__':
                         menu = False
                         animation = True
                         k = 1
-                    if 107 <= x <= 244 and 163 <= y <= 217:
+                        f = 1
+                    if 30 <= x <= 30 + text.get_width() and 40 <= y <= 40 + text.get_width():
                         menu = False
                         rules = True
                         k = 1
+                        f = 1
         elif rules:
             screen.fill(bg_color)
             pygame.draw.rect(screen, ('white'), (100, 150, 500, 450))
@@ -335,6 +365,9 @@ if __name__ == '__main__':
                 clock.tick(20)
                 screen.fill(bg_color)
                 pygame.display.update()
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        sys.exit()
                 if kol > 700:
                     running = False
 
@@ -342,31 +375,67 @@ if __name__ == '__main__':
             level_game = True
 
         elif level_game:
+            f = 1
             screen.fill(bg_color)
             if k == 1:
                 gun.zero_update_gun(screen)
                 k = 0
             events(screen, gun, bullets)
-            if stats.run_game:
-                gun.update_gun()
-                update(bg_color, screen, stats, gun, inos, bullets)
-                update_bullets(screen, stats, inos, bullets)
-                update_inos(stats, screen, gun, inos, bullets)
+
+            gun.update_gun()
+            update(bg_color, screen, gun, inos, bullets)
+            update_bullets(screen, inos, bullets, f)
+            update_inos(screen, gun, inos, bullets)
 
             gun.output()
+        elif win:
+            screen.fill(bg_color)
+            font = pygame.font.Font(None, 40)
+            text = font.render('Level successfully completed!)', True, 'green')
+            text_x = (700 - text.get_width()) // 2
+            text_y = (800 - text.get_height()) // 2
+            screen.blit(text, (text_x, text_y))
+            con = sqlite3.connect("rating.db")
+
+            # Создание курсора
+            cur = con.cursor()
+
+            # Выполнение запроса и получение всех результатов
+            result = cur.execute(f"""UPDATE main SET level={level + 1} 
+                        WHERE name == '{name}'""").fetchall()
+            con.commit()
+            con.close()
+            pygame.display.flip()
+            time.sleep(2.4)
+            menu = True
+            win = False
+            f = 1
 
         elif finish_window:
-            screen.fill(bg_color)
-            pygame.draw.rect(screen, (255, 0, 0), (300, 350, 100, 100))
 
+            screen.fill(bg_color)
+
+            font = pygame.font.Font(None, 40)
+            text = font.render('Level failed(', True, 'red')
+            text_x = (700 - text.get_width()) // 2
+            text_y = (800 - text.get_height()) // 2 - 20
+            screen.blit(text, (text_x, text_y))
+            text = font.render('Try again', True, 'red')
+            text_x = (700 - text.get_width()) // 2
+            text_y = (800 - text.get_height()) // 2 + 20
+            screen.blit(text, (text_x, text_y))
+            pygame.display.flip()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    x, y = pygame.mouse.get_pos()
-                    if 300 <= x <= 400 and 350 <= y <= 450:
-                        menu = True
-                        finish_window = False
+            time.sleep(2.4)
+            menu = True
+            finish_window = False
+            f = 1
+
+
+
+
 
         elif results:
             screen.fill(bg_color)
@@ -380,5 +449,6 @@ if __name__ == '__main__':
                     if 300 <= x <= 400 and 350 <= y <= 450:
                         menu = True
                         results = False
+                        f = 1
 
         pygame.display.flip()
