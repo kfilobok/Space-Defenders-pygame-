@@ -145,19 +145,76 @@ if __name__ == '__main__':
     menu = level_game = finish_window = results = rules = False
     # shop =False
     k = 0
+    user_name = ''
+    color = 'green'
+    input_rect = pygame.Rect(130, 350, 440, 32)
+
     while True:
         if start_window:
             screen.fill(bg_color)
-            pygame.draw.rect(screen, (0, 255, 0), (300, 350, 100, 100))
+
+            screen.blit(pygame.image.load('заставка.png'), (0, 40))
+            pygame.draw.rect(screen, 'Black', (150, 200, 400, 400))
+            pygame.draw.rect(screen, ('black'), (100, 150, 500, 450))
+            font = pygame.font.Font(None, 70)
+            text = font.render("WELCOME", True, (164, 255, 161))
+            text_x = (700 - text.get_width()) // 2
+            text_y = (800 - text.get_height()) // 2 - 150
+            screen.blit(text, (text_x, text_y))
+            font = pygame.font.Font(None, 23)
+            text = font.render("User name:", True, (164, 255, 161))
+            text_x = 130
+            text_y = (800 - text.get_height()) // 2 - 70
+            screen.blit(text, (text_x, text_y))
+            font = pygame.font.Font(None, 23)
+            text = font.render("(use letters and numbers, no more than 11, no less than 0)", True, (164, 255, 161))
+            text_x = 130
+            text_y = (800 - text.get_height()) // 2
+            screen.blit(text, (text_x, text_y))
+            font = pygame.font.Font(None, 32)
+            text = font.render("Done!", True, (164, 255, 161))
+            text_x = text.get_width() + 250
+            text_y = text.get_height() + 440
+            screen.blit(text, (text_x, text_y))
+            text_w = text.get_width()
+            text_h = text.get_height()
+            pygame.draw.rect(screen, (164, 255, 161), (text_x - 10, text_y - 10,
+                                                       text_w + 20, text_h + 20), 1)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = pygame.mouse.get_pos()
-                    if 300 <= x <= 400 and 350 <= y <= 450:
+                    if 300 <= x <= 381 and 451 <= y <= 493 and 11 > len(user_name) > 0:
                         start_window = False
                         menu = True
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_BACKSPACE:
+                        if len(user_name) > 0:
+                            user_name = user_name[:-1]
+                            if len(user_name) > 10:
+                                color = 'red'
+                            else:
+                                color = 'green'
+
+                    else:
+                        if len(user_name) > 10:
+                            color = 'red'
+                        else:
+                            color = 'green'
+                        user_name += event.unicode
+
+            pygame.draw.rect(screen, color, input_rect, 2)
+            text_surface = font.render(user_name, True, (255, 255, 255))
+            screen.blit(text_surface, (input_rect.x + 5, input_rect.y + 5))
+            input_rect.w = max(300, text_surface.get_width() + 10)
+            pygame.display.flip()
+            clock.tick(60)
+
+
+
 
         elif menu:
 
