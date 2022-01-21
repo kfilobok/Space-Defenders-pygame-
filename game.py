@@ -187,7 +187,7 @@ if __name__ == '__main__':
         if start_window:
             screen.fill(bg_color)
 
-            screen.blit(pygame.image.load('заставка(2).png'), (0, 0))
+            screen.blit(pygame.image.load('заставка.png'), (0, 0))
             pygame.draw.rect(screen, 'Black', (150, 200, 400, 400))
             pygame.draw.rect(screen, ('black'), (100, 150, 500, 450))
             font = pygame.font.Font(None, 70)
