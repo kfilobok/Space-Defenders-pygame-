@@ -50,14 +50,14 @@ def update_bullets(screen, inos, bullets, f):
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
-
+    pygame.sprite.groupcollide(bullets, inos, True, True)
     if len(inos) == 0:
         bullets.empty()
         win = True
         level_game = False
 
 
-def gun_kill(screen, gun, inos, bullets):
+def gun_kill ( inos, bullets):
     global finish_window
     global level_game
     inos.empty()
@@ -70,7 +70,7 @@ def update_inos(screen, gun, inos, bullets):
     """обновляет позицию пришельцев"""
     inos.update()
     if pygame.sprite.spritecollideany(gun, inos):
-        gun_kill(screen, gun, inos, bullets)
+        gun_kill(inos, bullets)
     inos_check(screen, gun, inos, bullets)
 
 
@@ -79,7 +79,7 @@ def inos_check(screen, gun, inos, bullets):
     screen_rect = screen.get_rect()
     for ino in inos.sprites():
         if ino.rect.bottom >= screen_rect.bottom:
-            gun_kill(screen, gun, inos, bullets)
+            gun_kill(inos, bullets)
             break
 
 
@@ -133,7 +133,7 @@ if __name__ == '__main__':
     while True:
         if start_window:
             screen.fill(bg_color)
-            screen.blit(pygame.image.load('заставка.png'), (0, 0))
+            screen.blit(pygame.image.load('images/заставка.png'), (0, 0))
             pygame.draw.rect(screen, 'Black', (150, 200, 400, 400))
             pygame.draw.rect(screen, ('black'), (100, 150, 500, 450))
             font = pygame.font.Font(None, 70)
@@ -214,11 +214,11 @@ if __name__ == '__main__':
                     level = 1
 
                 if level < 5:
-                    image = 'ino(2).png'
+                    image = 'images/ino(1).png'
                 elif level < 10:
-                    image = 'ino.png'
+                    image = 'images/ino(2).png'
                 else:
-                    image = 'pr.png'
+                    image = 'images/ino(3).png'
 
                 create_army(screen, inos, level, image)
                 f = 0
@@ -407,12 +407,12 @@ if __name__ == '__main__':
 
         elif animation:
             screen.fill('black')
-            illustration = [pygame.image.load('кадр 1.png'), pygame.image.load('кадр 2.png'),
-                            pygame.image.load('кадр 3.png'), pygame.image.load('кадр 4.png'),
-                            pygame.image.load('кадр 5.png'), pygame.image.load('кадр 6.png'),
-                            pygame.image.load('кадр 7.png'), pygame.image.load('кадр 8.png'),
-                            pygame.image.load('кадр 9.png'), pygame.image.load('кадр 10.png'),
-                            pygame.image.load('кадр 11.png'), pygame.image.load('кадр 12.png')
+            illustration = [pygame.image.load('images/кадр 1.png'), pygame.image.load('images/кадр 2.png'),
+                            pygame.image.load('images/кадр 3.png'), pygame.image.load('images/кадр 4.png'),
+                            pygame.image.load('images/кадр 5.png'), pygame.image.load('images/кадр 6.png'),
+                            pygame.image.load('images/кадр 7.png'), pygame.image.load('images/кадр 8.png'),
+                            pygame.image.load('images/кадр 9.png'), pygame.image.load('images/кадр 10.png'),
+                            pygame.image.load('images/кадр 11.png'), pygame.image.load('images/кадр 12.png')
                             ]
             width = 254
             height = 254
@@ -443,7 +443,7 @@ if __name__ == '__main__':
             f = 1
             screen.fill(bg_color)
             if k == 1:
-                gun.zero_update_gun(screen)
+                gun.create_gun()
                 k = 0
             events(screen, gun, bullets)
             gun.update_gun()
@@ -491,16 +491,6 @@ if __name__ == '__main__':
             finish_window = False
             f = 1
 
-        elif results:
-            screen.fill(bg_color)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    x, y = pygame.mouse.get_pos()
-                    if 300 <= x <= 400 and 350 <= y <= 450:
-                        menu = True
-                        results = False
-                        f = 1
+
 
         pygame.display.flip()
