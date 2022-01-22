@@ -50,14 +50,14 @@ def update_bullets(screen, inos, bullets, f):
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
-
+    pygame.sprite.groupcollide(bullets, inos, True, True)
     if len(inos) == 0:
         bullets.empty()
         win = True
         level_game = False
 
 
-def gun_kill(screen, gun, inos, bullets):
+def gun_kill ( inos, bullets):
     global finish_window
     global level_game
     inos.empty()
@@ -70,7 +70,7 @@ def update_inos(screen, gun, inos, bullets):
     """обновляет позицию пришельцев"""
     inos.update()
     if pygame.sprite.spritecollideany(gun, inos):
-        gun_kill(screen, gun, inos, bullets)
+        gun_kill(inos, bullets)
     inos_check(screen, gun, inos, bullets)
 
 
@@ -79,7 +79,7 @@ def inos_check(screen, gun, inos, bullets):
     screen_rect = screen.get_rect()
     for ino in inos.sprites():
         if ino.rect.bottom >= screen_rect.bottom:
-            gun_kill(screen, gun, inos, bullets)
+            gun_kill(inos, bullets)
             break
 
 
@@ -214,11 +214,11 @@ if __name__ == '__main__':
                     level = 1
 
                 if level < 5:
-                    image = 'ino(2).png'
-                elif level < 10:
                     image = 'ino(1).png'
+                elif level < 10:
+                    image = 'ino(2).png'
                 else:
-                    image = 'pr.png'
+                    image = 'ino(3).png'
 
                 create_army(screen, inos, level, image)
                 f = 0
