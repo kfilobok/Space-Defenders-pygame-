@@ -1,40 +1,18 @@
 import sys
 import sqlite3
-
 import time
-
 import pygame
 from gun import Gun
 from pygame.sprite import Group
-
-# from scores import Scores
 from ino import Ino
 from bullet import Bullet
 
 clock = pygame.time.Clock()
 
 
-#
-# # Подключение к БД
-# con = sqlite3.connect("films_db.sqlite")
-#
-# # Создание курсора
-# cur = con.cursor()
-#
-# # Выполнение запроса и получение всех результатов
-# result = cur.execute("""SELECT * FROM films
-#             WHERE year = 2010""").fetchall()
-#
-# # Вывод результатов на экран
-# for elem in result:
-#     print(elem)
-#
-# con.close()
-
-
 def events(screen, gun, bullets):
     """обработка нажатий клавиш"""
-
+    global level
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -46,6 +24,9 @@ def events(screen, gun, bullets):
             elif event.key == pygame.K_SPACE:
                 new_bullet = Bullet(screen, gun)
                 bullets.add(new_bullet)
+                if level >= 12:
+                    new_bullet = Bullet(screen, gun)
+                    bullets.add(new_bullet)
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_RIGHT:
@@ -56,10 +37,8 @@ def events(screen, gun, bullets):
 
 def update(bg_color, screen, gun, inos, bullets):
     """обновление экрана"""
-    # sc.show_score()
     for bullet in bullets.sprites():
         bullet.draw_bullet()
-
     inos.draw(screen)
 
 
@@ -71,13 +50,7 @@ def update_bullets(screen, inos, bullets, f):
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
-    collisions = pygame.sprite.groupcollide(bullets, inos, True, True)
-    # if collisions:
-    # for inos in collisions.values():
-    # stats.score += 10 * len(inos)
-    # sc.image_score()
-    # check_high_score(stats)
-    # sc.image_guns()
+
     if len(inos) == 0:
         bullets.empty()
         win = True
@@ -91,18 +64,6 @@ def gun_kill(screen, gun, inos, bullets):
     bullets.empty()
     finish_window = True
     level_game = False
-    # """столкновение пушки и армии"""
-    # if stats.guns_left > 0:
-    #     stats.guns_left -= 1
-    #     sc.image_guns()
-    #     inos.empty()
-    #     bullets.empty()
-    #     create_army(screen, inos, level)
-    #     gun.create_gun()
-    #     time.sleep(1)
-    # else:
-    #     stats.run_game = False
-    #     sys.exit()
 
 
 def update_inos(screen, gun, inos, bullets):
@@ -143,8 +104,6 @@ def create_army(screen, inos, level, image):
     ino = Ino(screen, image)
     ino_width = ino.rect.width
     ino_height = ino.rect.height
-    # number_ino_x = int((700 - x * ino_width) / ino_width)
-    # number_ino_y = int((800 - 100 - y * ino_height) / ino_height)
 
     for row_number in range(number_ino_y):
         for ino_number in range(number_ino_x):
@@ -156,16 +115,6 @@ def create_army(screen, inos, level, image):
             inos.add(ino)
 
 
-#
-# def check_high_score( sc):
-#     """проверка новых рекордов"""
-#     if stats.score > stats.high_score:
-#         stats.high_score = stats.score
-#         sc.image_high_score()
-#         with open('highscore.txt', 'w') as f:
-#             f.write(str(stats.high_score))
-
-
 if __name__ == '__main__':
     pygame.init()
     clock = pygame.time.Clock()
@@ -175,8 +124,6 @@ if __name__ == '__main__':
     gun = Gun(screen)
     bullets = Group()
     inos = Group()
-
-    # sc = Scores(screen, stats)
     start_window = True
     menu = level_game = finish_window = rating = rules = animation = win = False
     k = 0
@@ -186,7 +133,6 @@ if __name__ == '__main__':
     while True:
         if start_window:
             screen.fill(bg_color)
-
             screen.blit(pygame.image.load('заставка.png'), (0, 0))
             pygame.draw.rect(screen, 'Black', (150, 200, 400, 400))
             pygame.draw.rect(screen, ('black'), (100, 150, 500, 450))
@@ -250,11 +196,9 @@ if __name__ == '__main__':
             f = 1
 
 
-
-
         elif menu:
             if f == 1:
-                # данные считываются из бд и впоследствии используются в функциях: create_army, table_results
+                # данные считываются из бд и впоследствии используются в функциях: create_army, rating
                 con = sqlite3.connect("rating.db")
                 cur = con.cursor()
                 result = cur.execute(f"""SELECT level FROM main
@@ -263,10 +207,7 @@ if __name__ == '__main__':
                     level = result[0][0]
                 else:
                     con = sqlite3.connect("rating.db")
-
-                    # Создание курсора
                     cur = con.cursor()
-
                     # Выполнение запроса и получение всех результатов
                     result = cur.execute(f"""INSERT INTO main(name, level) VALUES ('{user_name}', 1)""").fetchall()
                     con.commit()
@@ -369,7 +310,6 @@ if __name__ == '__main__':
             text_x = 100 + (500 - text.get_width()) // 2
             text_y = text.get_height() + 360
             screen.blit(text, (text_x, text_y))
-            # you can keep trying until the level is completed
             text = font.render("You have an infinite number of attempts per level", True, 'black')
             text_x = 100 + (500 - text.get_width()) // 2
             text_y = text.get_height() + 390
@@ -506,12 +446,10 @@ if __name__ == '__main__':
                 gun.zero_update_gun(screen)
                 k = 0
             events(screen, gun, bullets)
-
             gun.update_gun()
             update(bg_color, screen, gun, inos, bullets)
             update_bullets(screen, inos, bullets, f)
             update_inos(screen, gun, inos, bullets)
-
             gun.output()
         elif win:
             screen.fill(bg_color)
@@ -521,10 +459,7 @@ if __name__ == '__main__':
             text_y = (800 - text.get_height()) // 2
             screen.blit(text, (text_x, text_y))
             con = sqlite3.connect("rating.db")
-
-            # Создание курсора
             cur = con.cursor()
-
             # Выполнение запроса и получение всех результатов
             result = cur.execute(f"""UPDATE main SET level={level + 1} 
                         WHERE name == '{user_name}'""").fetchall()
@@ -537,9 +472,7 @@ if __name__ == '__main__':
             f = 1
 
         elif finish_window:
-
             screen.fill(bg_color)
-
             font = pygame.font.Font(None, 40)
             text = font.render('Level failed(', True, 'red')
             text_x = (700 - text.get_width()) // 2
@@ -557,10 +490,6 @@ if __name__ == '__main__':
             menu = True
             finish_window = False
             f = 1
-
-
-
-
 
         elif results:
             screen.fill(bg_color)
