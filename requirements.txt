@@ -1,0 +1,106 @@
+import sys
+import sqlite3
+import time
+import pygame
+from gun import Gun
+from pygame.sprite import Group
+from ino import Ino
+from bullet import Bullet
+
+clock = pygame.time.Clock()
+
+
+def events(screen, gun, bullets):
+    """обработка нажатий клавиш"""
+
+
+def update(bg_color, screen, gun, inos, bullets):
+    """обновление экрана, используется для отрисовки спрайтов"""
+
+
+def update_bullets(screen, inos, bullets, f):
+    """обновление позиции пуль"""
+
+
+def gun_kill(screen, gun, inos, bullets):
+    """завершение игры, удаление данных прошедшей игры"""
+
+
+def update_inos(screen, gun, inos, bullets):
+    """обновление позиции пришельцев"""
+
+
+def inos_check(screen, gun, inos, bullets):
+    """проверка, добралась ли армия до края экрана"""
+
+
+def create_army(screen, inos, level, image):
+    """создание армии пришельцев"""
+
+
+if __name__ == '__main__':
+    """основной цикл программы""""
+    start_window = True
+    menu = level_game = finish_window = rating = rules = animation = win = False
+    while True:
+        if start_window:
+            """"стартовое окно: пулучение имени пользователя"""
+
+        elif menu:
+            """"создание интерфейса"""
+        elif rules:
+            """"Правила игры"""
+
+        elif rating:
+            """"Рейтинг: на экран выводится """
+
+        elif animation:
+            """отвечает за анимацию перед началом игры"""
+
+        elif level_game:
+            """отвечает за вывод на икран самой игры и ее результата: проигрыш/победа""""
+
+        pygame.display.flip()
+
+
+class Bullet(pygame.sprite.Sprite):
+
+    def __init__(self, screen, gun):
+        """создание пули"""
+
+    def update(self):
+        """движение пули вверх"""
+
+    def draw_bullet(self):
+        """отрисовка пули на экране"""
+
+
+class Ino(pygame.sprite.Sprite):
+    """класс одного пришельца"""
+
+    def __init__(self, screen, image0):
+        """инициализирия, задается начальная позиция"""
+
+    def draw(self):
+        """вывод пришельца на экран"""
+
+    def update(self):
+        """перемещение пришельца"""
+
+
+from pygame.sprite import Sprite
+
+
+class Gun(Sprite):
+
+    def __init__(self, screen):
+        """инициализация пушки"""
+
+    def output(self):
+        """отрисовка пушки"""
+
+    def update_gun(self):
+        """обновление позиции пушки"""
+
+    def create_gun(self):
+        """размещение пушки по центру внизу экрана"""
